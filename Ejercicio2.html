@@ -639,7 +639,7 @@ for(i in c(1:nrow(datos %&gt;% select(id_producto) %&gt;% unique()))){
     
    #z  
    #z &lt;- read.zoo(datosproducto %&gt;% select(timestamp, produccion), header = TRUE, format = &quot;%Y-%m-%d&quot;)
-   #plot(z, main = paste(&quot;Producto: &quot;,  datosproductos[i,1])) 
+   plot(z, main = paste(&quot;Producto: &quot;,  datosproductos[i,1])) 
    
    auto.arima(z, trace = TRUE)
    
