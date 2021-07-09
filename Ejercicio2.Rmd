@@ -18,6 +18,7 @@ library(lubridate)
 library(tseries)
 library(xts)
 library(zoo)
+library(ggplot2)
 
 ```
 
@@ -56,6 +57,7 @@ for(i in c(1:nrow(datos %>% select(id_producto) %>% unique()))){
    print(paste0("Producto ", datosproductos[i,1]))
    datosproducto <- datos %>% filter(id_producto == datosproductos[i,1]) 
    z <- read.zoo(datosproducto %>% select(timestamp, produccion), header = TRUE, format = "%Y-%m-%d")
+   plot(z, main = paste("Producto: ",  datosproductos[i,1])) 
    
    auto.arima(z, trace = TRUE)
    
@@ -63,3 +65,25 @@ for(i in c(1:nrow(datos %>% select(id_producto) %>% unique()))){
 
 ```
 
+### Modelos 
+```{r}
+
+
+
+for(i in c(1:nrow(datos %>% select(id_producto) %>% unique()))){
+   print(paste0("-------------------------MODELO----------------------------------"))
+   print(paste0("Producto ", datosproductos[i,1]))
+   datosproducto <- datos %>% filter(id_producto == datosproductos[i,1]) 
+   z <- read.zoo(datosproducto %>% select(timestamp, produccion), header = TRUE, format = "%Y-%m-%d")
+   miModelo <- arima(z, order = c(0,0,0) )
+   miModelo %>% summary()
+   
+   miForest <- forecast(miModelo, h=480)
+   miForest %>% kable()
+   miForest$mean
+  
+   plot(miForest, main = paste("Producto forecast: ",  datosproductos[i,1])) 
+}
+
+
+```
