@@ -80,11 +80,14 @@ for(i in c(1:nrow(datos %>% select(id_producto) %>% unique()))){
    print(paste0("Producto ", datosproductos[i,1]))
    datosproducto <- datos %>% filter(id_producto == datosproductos[i,1]) 
    #z <- read.zoo(datosproducto %>% select(timestamp, produccion), header = TRUE, format = "%Y-%m-%d")
-   z <- xts(datosproducto$produccion, datosproducto$timestamp)     
+   z <- xts(datosproducto$produccion, datosproducto$timestamp)  
+   fit <- auto.arima(z, trace = TRUE)
+   
+   
    miModelo <- arima(z, order = c(3,1,2) )
    miModelo %>% summary()
    
-   miForest <- forecast(miModelo, h=16)
+   miForest <- forecast(fit, h=16)
    miForest %>% kable()
    miForest$mean
   
