@@ -1,0 +1,283 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+#POSIX
+#POSIXct
+#POSIXlt
+
+ct<-as.POSIXct("2019-12-25 11:45:53")
+lt<-as.POSIXlt("2019-12-25 11:45:53")
+
+ct
+```
+```{r}
+lt
+```
+```{r}
+unclass(ct)
+```
+```{r}
+unclass(lt)
+```
+
+```{r}
+x<-as.Date("2019-12-25")
+x
+```
+```{r}
+class(x)
+```
+```{r}
+unclass(x)
+```
+```{r}
+#install.packages("chron")
+library(chron)
+x<-chron("12/05/2019", "23:55:56")
+x
+```
+```{r}
+class(x)
+```
+```{r}
+unclass(x)
+```
+```{r}
+a<-c("1993-12-30 23:45:45", "1994-11-05 18:15:12", "1992-03-09 14:23:20")
+class(a)
+```
+```{r}
+b<-strptime(a, format = "%Y-%m-%d %H:%M:%s")
+b
+```
+```{r}
+class(b)
+```
+```{r}
+a<-c("12/09/2019 23:45", "11/18/2019 18:15", "03/09/2011 14:23")
+```
+
+```{r}
+b<-strptime(a, format = "%d/%m/%Y %H:%M")
+b
+```
+```{r}
+library(lubridate)
+```
+```{r}
+x<-dmy_hm("11/05/2019 18:15")
+x
+```
+```{r}
+x<-mdy_hm("05/11/2019 18:15")
+x
+```
+
+```{r}
+class(x)
+```
+```{r}
+day(x)
+month(x)
+year(x)
+hour(x)
+minute(x)
+```
+
+```{r}
+x<-mdy_hm("05-11-2019 18:15")
+x
+```
+```{r}
+x<-mdy_hm("05.11.2019 18:15")
+x
+```
+```{r}
+x<-ymd_hm("2019-08-12 18:15")
+x
+```
+```{r}
+wday(x, label=T, abbr=F)
+```
+```{r}
+x<-ymd("1991-09-03")
+x
+```
+```{r}
+wday(x, label=T, abbr=T)
+```
+```{r}
+OlsonNames()
+```
+
+```{r}
+x<-ymd_hm("1991-09-03 18:15", tz="America/Guatemala")
+x
+```
+```{r}
+with_tz(x, tzone="Europe/Berlin")
+```
+
+### Operaciones de tiempo
+```{r}
+minutes(7)
+```
+```{r}
+minutes(2.5)
+```
+```{r}
+dminutes(2.5)
+```
+```{r}
+dminutes(7.5) + dminutes(3.8)
+```
+```{r}
+dminutes(7.5) + dminutes(3.8) + dseconds(4)
+```
+```{r}
+x<-ymd("2021-06-18")
+wday(x, abbr=F, label=T)
+```
+```{r}
+wday(dmy("18/06/2021"), label=TRUE)
+```
+```{r}
+hoy<-dmy("18/06/2021")
+hoy + dyears(2.32323434)
+```
+```{r}
+x<-leap_year(2002:2021)
+names(x)<-c(2002:2021)
+x
+```
+
+
+#Representación de Series Temporales en R
+```{r}
+vals<-runif(n=50, min=20, max=50)
+temp<-ts(data = vals, start = 1956)
+temp
+```
+
+```{r}
+class(temp)
+```
+```{r}
+plot(temp)
+```
+```{r}
+temp<-ts(data = vals, start = 1956, frequency = 12)
+temp
+```
+```{r}
+temp<-ts(data = vals, start = 1956, frequency = 4)
+temp
+```
+```{r}
+temp<-ts(data = vals, start = 1, frequency = 60)
+temp
+```
+```{r}
+temp<-ts(data = vals, start = c(1956, 6), frequency = 12)
+temp
+```
+```{r}
+plot(temp)
+```
+
+```{r}
+time(temp)
+```
+```{r}
+x<-cumsum(rnorm(n=450, mean=0, sd=12))
+y<-ts(x, start = c(1920, 11), frequency = 12)
+lattice::xyplot.ts(y)
+```
+
+```{r}
+plot.ts(x)
+```
+
+```{r}
+class(nottem)
+```
+```{r}
+plot(nottem)
+```
+```{r}
+plot(decompose(nottem))
+```
+
+```{r}
+plot(decompose(y))
+```
+```{r}
+dec_y<-decompose(y)
+plot(dec_y$random)
+```
+```{r}
+plot(dec_y$trend)
+```
+```{r}
+dataX<-read.csv("dataOutNA.csv")
+dataX
+```
+
+```{r}
+tsDataX<-ts(dataX$mydata)
+tsDataX
+```
+
+```{r}
+summary(tsDataX)
+```
+```{r}
+plot(tsDataX)
+```
+
+```{r}
+LS<-1.75*summary(tsDataX)["3rd Qu."]
+Outliers<-sum((tsDataX >= LS), na.rm = T)
+Outliers
+```
+```{r}
+Nans<-sum(is.na(tsDataX))
+NAns
+```
+```{r}
+p_corrup<-(Outliers + NAns) / length(tsDataX)
+p_corrup
+```
+```{r}
+library(forecast)
+OutliersTreatment<-tsoutliers(tsDataX)
+OutliersTreatment
+```
+```{r}
+temp<-tsDataX
+temp[OutliersTreatment$index]<-OutliersTreatment$replacements
+plot(temp)
+```
+```{r}
+library(zoo)
+temp.NA_Locf<-na.locf(temp)
+plot(temp.NA_locf)
+```
+
+```{r}
+temp.fill<-na.fill(temp, 33)
+plot(temp.fill)
+```
+
+```{r}
+temp<-na.interp(temp)
+plot(temp)
+```
+```{r}
+temp2<-tsclean(tsDataX)
+plot(temp2)
+```
+

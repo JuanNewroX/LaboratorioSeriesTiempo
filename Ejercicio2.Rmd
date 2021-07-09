@@ -1,0 +1,65 @@
+---
+title: "Ejercicio2"
+author: "JuanRomero"
+date: "8/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(forecast)
+library(kableExtra)
+library(knitr)
+library(lubridate)
+library(tseries)
+library(xts)
+library(zoo)
+
+```
+
+### 1. Analice la estructura del dataset, no que existe una variable de timestamp, producto y valor de producción
+```{r }
+
+datos <- read.csv(file = "dataOut.csv")
+
+datos %>% head(10) %>% kable()
+
+datos %>% summary() %>% kable()
+
+
+class(datos$timestamp)
+class(datos$id_producto)
+class(datos$produccion)
+
+
+
+```
+### Cree un modelo arima usando auto.arima para cada uno de los  productos en la data.
+
+```{r}
+
+datos <- datos %>% mutate(
+  timestamp = ymd(timestamp),
+  produccion = as.numeric(produccion)
+)
+
+class(datos$timestamp)
+
+datosproductos <- datos$id_producto %>% unique() %>% as.matrix()
+
+for(i in c(1:nrow(datos %>% select(id_producto) %>% unique()))){
+   print(paste0("-----------------------------------------------------------"))
+   print(paste0("Producto ", datosproductos[i,1]))
+   datosproducto <- datos %>% filter(id_producto == datosproductos[i,1]) 
+   z <- read.zoo(datosproducto %>% select(timestamp, produccion), header = TRUE, format = "%Y-%m-%d")
+   
+   auto.arima(z, trace = TRUE)
+   
+}
+
+```
+

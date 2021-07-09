@@ -1,0 +1,117 @@
+---
+title: "Ejercicio1"
+author: "JuanRomero"
+date: "8/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(forecast)
+```
+
+### Cree un arreglo de 1500 valores con distribución de probabilidad normal con media = 0 y desviación estándar = 5 
+
+```{r }
+set.seed("1989")
+
+arreglo  <- norm <- rnorm(n = 1500, mean = 0, sd = 5)
+
+arreglo %>% head(10)
+
+arreglo %>%  summary()
+
+```
+
+### Cree una suma acumulativa de estos valores
+```{r}
+
+suma_Acumulativa <- cumsum(arreglo)
+
+suma_Acumulativa %>% head(10)
+
+```
+
+Muestre una gráfica de la serie temporal.
+
+```{r}
+
+plot.ts(arreglo)
+
+plot.ts(suma_Acumulativa)
+
+```
+
+### Cree una serie de tiempo con la función ts()
+```{r}
+
+y<-ts(suma_Acumulativa, start = 1940, frequency = 12)
+y
+plot(y)
+lattice::xyplot.ts(y)
+```
+
+
+### 6. Realice un comentario sobre cada uno de los componentes de la serie  temporal
+```{r}
+
+plot(decompose(y))
+
+print(paste0("Observed", "Es la grafica original"))
+
+print(paste0("Trends ", "Por la cantidad de datos se puede observar que la tendencia es muy similar a la observada, la tendencia de los datos empieza a disminuir pero finalmente los datos alcanzan su pico mas alto en los ultimos años "))
+
+print(paste0("Trends ", "Se puede observar que la tendencia es muy similar a la observada, la tendencia de los datos empieza a disminuir pero finalmente los datos alcanzan su pico mas alto en los ultimos años "))
+
+print(paste0("Seasonal ", "Si se alcanza a observar una estacionalidad en algunos periodos de tiempos"))
+
+
+```
+
+### Determine se la serie es estacionar o no (stationarity)
+
+
+```{r}
+
+print(paste("Visualmente se puede observar que si hay una estacional"))
+
+adf.test(y)
+print(paste0("Segun el valor de P podemos concluir que si es estacionaria"))
+
+```
+
+### . De no ser estacionar, investigue como es posible resolver este  problema usando diferenciación temporal
+
+
+```{r}
+print(paste("Aunque visualmente se ve estacional igual se aplicara el metodo"))
+
+huron_diff1 <- diff(y, 1) 
+huron_diff1
+
+huron_diff10 <- diff(y, 10) 
+huron_diff10
+
+```
+
+
+###  Muestre y una grafica sobre la serie temporal resultante.
+```{r}
+
+plot(decompose(huron_diff1))
+ggAcf(huron_diff1) + ylim(c(-1,1)) + ggtitle("Lag 1 differencing")
+tsdisplay(huron_diff1)
+
+plot(decompose(huron_diff10))
+ggAcf(huron_diff10) + ylim(c(-1,1)) + ggtitle("Lag 10 differencing")
+tsdisplay(huron_diff10)
+
+
+```
+
+
+
+
